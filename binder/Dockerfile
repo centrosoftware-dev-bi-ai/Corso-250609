@@ -40,6 +40,14 @@ RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd6
     rm /tmp/chrome.deb && \
     rm -rf /var/lib/apt/lists/*
 
+RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f 1) && \
+    wget -q https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION -O /tmp/LATEST_RELEASE && \
+    CHROMEDRIVER_VERSION=$(cat /tmp/LATEST_RELEASE) && \
+    wget -q https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip -O /tmp/chromedriver.zip && \
+    unzip /tmp/chromedriver.zip -d /usr/local/bin/ && \
+    chmod +x /usr/local/bin/chromedriver && \
+    rm /tmp/chromedriver.zip /tmp/LATEST_RELEASE
+
 COPY . /home/jovyan/work
 
 RUN chown -R $NB_UID:$NB_GID /home/jovyan/work
