@@ -40,9 +40,13 @@ RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd6
     rm /tmp/chrome.deb && \
     rm -rf /var/lib/apt/lists/*
 
-CMD ["google-chrome", "--headless", "--no-sandbox", "--disable-gpu", "--remote-debugging-port=9222"]
+COPY . /home/jovyan/work
+
+RUN chown -R $NB_UID:$NB_GID /home/jovyan/work
 
 USER $NB_UID
 
 COPY requirements.txt /tmp/
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+CMD ["google-chrome", "--headless", "--no-sandbox", "--disable-gpu", "--remote-debugging-port=9222"]
