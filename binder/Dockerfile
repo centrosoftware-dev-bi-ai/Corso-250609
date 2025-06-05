@@ -1,44 +1,22 @@
-FROM jupyter/base-notebook:python-3.10
+FROM ubuntu:22.04
 
-USER root
-
-# Install dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y \
     wget \
-    unzip \
     ca-certificates \
-    fonts-liberation \
+    unzip \
+    libglib2.0-0 \
+    libnss3 \
+    libgconf-2-4 \
+    libfontconfig1 \
+    libxss1 \
     libappindicator3-1 \
     libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libgdk-pixbuf2.0-0 \
-    libnspr4 \
-    libnss3 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxrandr2 \
+    fonts-liberation \
     xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Chromium (manualmente)
-RUN wget -q https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/1180845/chrome-linux.zip && \
-    unzip chrome-linux.zip && \
-    mv chrome-linux /opt/chromium && \
-    ln -s /opt/chromium/chrome /usr/bin/chromium && \
-    rm chrome-linux.zip
-
-# Install matching Chromedriver manually (114.0.5735.90)
-RUN wget -q https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip && \
-    unzip chromedriver_linux64.zip && \
-    mv chromedriver /usr/local/bin/chromedriver && \
-    chmod +x /usr/local/bin/chromedriver && \
-    rm chromedriver_linux64.zip
-
-USER $NB_UID
-
-COPY requirements.txt /tmp/
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
+RUN wget -q https://deb.debian.org/debian/pool/main/c/chromium/chromium_114.0.5735.90-1~deb11u1_amd64.deb -O chromium.deb && \
+    apt-get update && \
+    apt-get install -y ./chromium.deb && \
+    rm chromium.deb && \
+    rm -rf /var/lib/apt/lists/*
