@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+# Fix path for chromium and chromedriver if needed
+export CHROME_BIN=/usr/bin/chromium-browser
+export PATH=$PATH:/usr/lib/chromium-browser/
+
+# Rende chromedriver eseguibile da selenium (dipende dal pacchetto installato)
+ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver || true
