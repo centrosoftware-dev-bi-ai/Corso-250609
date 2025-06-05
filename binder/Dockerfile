@@ -2,18 +2,27 @@ FROM jupyter/base-notebook:python-3.10
 
 USER root
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        chromium-browser \
-        unzip \
-        wget && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    chromium \
+    wget \
+    unzip \
+    libglib2.0-0 \
+    libnss3 \
+    libgconf-2-4 \
+    libfontconfig1 \
+    libxss1 \
+    libappindicator1 \
+    libasound2 \
+    fonts-liberation \
+    xdg-utils \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN CHROME_VER=$(chromium-browser --version | grep -oP '\d+\.\d+\.\d+') && \
-    CHROMEDRIVER_VER=$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VER}) && \
-    wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VER}/chromedriver_linux64.zip" && \
-    unzip chromedriver_linux64.zip -d /usr/local/bin && \
+# Install specific chromedriver version manually
+ENV CHROME_DRIVER_VERSION=116.0.5845.96
+
+RUN wget -q https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip && \
+    unzip chromedriver_linux64.zip && \
+    mv chromedriver /usr/local/bin/chromedriver && \
     chmod +x /usr/local/bin/chromedriver && \
     rm chromedriver_linux64.zip
 
