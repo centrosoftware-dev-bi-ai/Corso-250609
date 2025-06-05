@@ -1,9 +1,19 @@
 #!/bin/bash
-set -e
 
-# Fix path for chromium and chromedriver if needed
-export CHROME_BIN=/usr/bin/chromium-browser
-export PATH=$PATH:/usr/lib/chromium-browser/
+apt-get update -qq
 
-# Rende chromedriver eseguibile da selenium (dipende dal pacchetto installato)
-ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver || true
+apt-get install -y chromium-browser
+
+# Controlla se chromedriver è installato e compatibile
+if ! command -v chromedriver &> /dev/null; then
+    echo "Chromedriver non trovato, scarico manualmente"
+
+    CHROME_VER=$(chromium-browser --version | grep -oP '\d+\.\d+\.\d+')
+    CHROMEDRIVER_VER=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VER")
+    wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VER}/chromedriver_linux64.zip"
+    unzip -qq chromedriver_linux64.zip -d /usr/local/bin/
+    chmod +x /usr/local/bin/chromedriver
+    rm chromedriver_linux64.zip
+else
+    echo "Chromedriver già presente"
+fi
